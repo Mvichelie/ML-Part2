@@ -1,0 +1,9 @@
+{
+    "modelsavedfile1": "wikiart.pth",
+    "modelsavedfile2": "autoencoder.pth",
+    "trainingdir": "/scratch/lt2326-2926-h24/wikiart/train",
+    "testingdir": "/scratch/lt2326-2926-h24/wikiart/test",
+    "device": "cuda:1",
+    "epochs": 20,
+    "batch_size": 32
+}
