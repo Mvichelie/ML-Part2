@@ -1,72 +1,85 @@
 I have two parts for this assignemnt. Part 1 Image classification (Bonus A -class imbalance) and Part 2  autoencoding with clustering (Bonus B
-with Visualization of images and coparing it with the original. . 
+with Visualization of images and comparing it with the original.
+#Part 1:
 
-Run the script to train the classification model with Bonus A:
+UPDATED 
+What I did:
+I implemented a classification model to predict art styles from the dataset. 
+To handle the class imbalance (Bonus A), I used a WeightedRandomSampler. 
+This method increases the sampling probability for underrepresented classes, balancing the training process.
+
+To train the classification model, run:
 python trainpart1.py
-This script uses a "WeightedRandomSampler" to handle class imbalance (Bonus A)
-Trains the model for 20 epochs
-The output trained model is saved as wikiart.pth (note that the file is too big to be uploaded here)
 
-To test the classification model;
-Run the script below:
+This trains the model for 20 epochs.
+The trained model is saved as wikiart.pth (not included due to file size).
+
+Test the classification model:
+To evaluate the model’s performance on the test set, run:
 python testtrainpart1.py
-This script evaluates the model's performance
-The output gives you a confusion matrix saved as a png, along with accuracy, precision, recall, F1-score
-I included (accuracy, precision, recall and F1 due to the imbalanced classes and high accuracy alone might not
-reflect true performance. 
+This script calculates evaluation metrics (accuracy, precision, recall, F1-score) and generates a confusion matrix saved as confusion_matrix.png.
 
-Evaluation and Results:
-During training, the loss decreased from ~1102.24 (epoch 1) to ~5.28 (epoch 20), which shows the
-that the model was learning effectively.
-Accuracy: (~20.79%): slight better but model's ability to generalize is limited
-Precision: (~14.26%): model is overpredicting 
-Recall: (~13.91%): model fails to identify the correct class for most samples
-F1-Score (~13.13%): model stuggles equally with false negatives and false positives
-Confusion metrics: shows that some classes performed well but others struggled. The model seemed to predict the majority 
-classes more often and sparse predictions for the other classes. 
-For improvement, finetuning learning rate, epochs, using random search, upsampling the data. 
+#Results:
+During training, the loss decreased from 1102.24 (epoch 1) to 5.28 (epoch 20), which shows that the model was learning effectively.
+On the test set, the performance is outlined below:
 
+Test Performance:
+-Accuracy: ~20.79% (slightly better than random guessing).
+-Precision: ~14.26% (model overpredicts majority classes).
+-Recall: ~13.91% (struggles with correct predictions for sparse classes).
+-F1-Score: ~13.13% (balance of false positives and negatives).
+Impact of using WeightedRandomSampler:
+While the sampler helped balance the class representation during training, the model still struggled with underrepresented classes. To improve performance, I should try adjusting the learning rate, training for more epochs, or trying upsampling techniques to better handle the sparse classes.
 
-
-
-Part 2:
-In wikiart.py, I implemented an autoencoder which is used for the scripts below. 
-The autoencoder was trained to compress images into a latent representation and to reconstruct them as closely as possible. 
+#Part 2: UPDATED
+What I did:
+For Part 2, I implemented an autoencoder in wikiart.py, which was imported and used in the training and testing scripts below. The autoencoder’s purpose was to compress images into a latent space and reconstruct them as closely as possible.
 
 To train the autoencoder run the script below:
 python trainauto.py
-This script trains an autoencoder for 20 epochs to minimize image reconstruction loss
-The model is saved as autoencoder.pth (model not here due to file size)
-Training:
-The mean squared error between the original and reconstructed images was minimized. This was used as the 
-loss function because it evaluates how closely the reconstructed image matches the original (pixel wise)
-It ensures that the autoencoder focuses on learning fine details. 
 
-To test (Bonus B)
-run to the below:
+#UPDATED
+This script trains the autoencoder for 20 epochs to minimize the Mean Squared Error (MSE) between the original and reconstructed images. 
+I used Mean Squared Error (MSE) as the loss function because it checks how close the reconstructed image is to the original, pixel by pixel.
+It works well for this task because it really focuses on big differences whcih pushes the autoencoder to recreate the images as closely as possible.
+Once trained, the model is saved as autoencoder.pth (not included here due to file size).
+
+Testing:
+To test the autoencoder and generate the outputs for Bonus B, run:
 python testtrainauto.py
-This script extract latent encodings and perfroms PCA for dimensionality reduction
-It also uses Agglomerative clustering which gives the output of latent space clustering (clusters.png)
-And a reconstructed image comparison of the original and reconstructed side-by-side called.(reconstruction.ong) 
+This script does the following below:
+-For latent encodings,  the autoencoder compresses each image into a lower-dimensional latent space.
+-For dimensionality reduction, PCA is applied to reduce the high-dimensional latent space to 2D, simplifying it for visualization.
+-For clustering, Agglomerative Clustering is used to group similar images based on their latent encodings
+
+UPDATED:
+Addressing Latent Representations and Clustering:
+The autoencoder compressed each image into a smaller, more manageable latent representation. To make sense of this high-dimensional space, PCA was applied to reduce it to 2D for visualization. Then, Agglomerative Clustering grouped the representations into 27 clusters, matching the number of art styles in the dataset. The clustering results were visualized and saved as clusters.png.
+
+Why did I choose PCA and Agglomerative Clustering?
+
+PCA simplifies the latent space, which makes the visualization easy to interpret. While agglomerative clustering groups similar images into hierarchical clusters, which helps identify relationships between different art styles.
+
+The script also generates the original vs. reconstructed images side by side and saves the result as reconstruction.png.
+Output:
+-Clusters:A scatter plot as clusters.png (visualizes how well the autoencoder clusters the images).
+-Reconstructions: A comparison (reconstruction.png) shows original vs. reconstructed images.
 
 Results:
 Training:
-The loss decreased from ~104.59 (epoch 1) to ~84.49 (epoch 20), which shows that the autoencoder was learning effectively to reconstruct the 
-images while preserving key features.
+During training, the loss steadily decreased from approximately 104.59 in epoch 1 to 84.49 by epoch 20. This consistent decline indicates that the autoencoder was effectively learning to compress the input images while preserving their key features.
 
 Clustering results:
-The autoencoder's latent representations were clustered into 27 groups, corresponding to the number of art styles in the dataset. These representations were reduced to 2D using PCA for visualization, 
-producing the scatter plot (clusters.png).
+The autoencoder’s latent representations were clustered into 27 groups, corresponding to the number of art styles in the dataset. After applying PCA to reduce the latent space to 2D, the clusters were visualized in the scatter plot (clusters.png).
 ![image](https://github.com/user-attachments/assets/5d28e288-7f5e-4a43-9324-3ee035ad0a54)
-The clusters show several distinct groupings, which suggests that the autoencoder captured style-specific features from the dataset.
-There is some overlap between the clusters, which I assume isfrom the shared characteristics among certain art styles. 
+
+The clusters show several distinct groupings, suggesting that the autoencoder captured style-specific features from the dataset. However, some overlap exists between clusters, likely due to shared characteristics such as color palettes or composition among certain art styles.
 
 Reconstruction results:
-The image(s) show that the autoencoder has the ability to preserve the overall structure of the input image
+The reconstructed images keep the overall structure and layout of the originals, but some fine details, like textures and small lines, are missing. This happens because the autoencoder compresses the images into a smaller space, focusing on the main features and leaving out the finer details.
 ![image](https://github.com/user-attachments/assets/15dd13e4-8a9c-4612-9425-134d931d5c06)
 
-Overall the autoencoder successfully compresses the images while preserving the major features, The clustering
-results show that the autoencoder has the ability to differentiate between art styles. 
+Overall the autoencoder successfully compresses images while preserving their major features. The clustering results show that the model can differentiate between art styles, even if there is some overlap. Similarly, the reconstructions demonstrate that the autoencoder captures the essential structure of images, although it struggles with finer details.
 
 
 
